@@ -2,29 +2,41 @@ import { useState } from 'react';
 import './App.css'
 
 export default function App() {
+  const [todos, setTodos] = useState([]); // { id: 0, text: "",}
+  
   return (
     <div className='app-wrapper'>
       <h1>Tasks</h1>
-      <Form />
+      <Form addTodo={todo => {
+        setTodos(prev => [...prev, todo]);
+      }} />
 
       <div className='todo-list'>
-      <Todo>Helloooooo</Todo>
-      <Todo>Helloooooo</Todo>
-      <Todo>Helloooooo</Todo>
-      <Todo>Helloooooo</Todo>
+        {todos.map((todo, i) => (
+          <Todo onDelete={() => {
+            setTodos((prev) => {
+              return prev.filter((_, y) => i !== y);
+            });
+          }} key={i}>{todo}</Todo>
+        ))}
       </div>
     </div>
   );
 }
 
-const Form = () => {
+const Form = ({addTodo}) => {
   const onSubmit = (event) => {
     event.preventDefault();
+
+    console.log(event.currentTarget.elements);
+    const todoText = event.currentTarget.elements.todo.value;
+    addTodo(todoText)
+    event.currentTarget.reset(); // reset de l'input qd on a rentré une tâche
   };
 
   return (
     <form className='form-wrapper' onSubmit={onSubmit}>
-      <input type="text" className='input' placeholder='Add a task' />
+      <input id='todo' type="text" className='input' placeholder='Add a task' />
       <Button type="submit">Submit</Button>
     </form>
   )
@@ -38,13 +50,13 @@ const Button = ({ children, ...props }) => {
   );
 };
 
-const Todo = ({ children }) => {
+const Todo = ({ children, onDelete }) => {
   return (
     <div className='todo-wrapper'>
       <Checkbox />
       <label className='todo-text'>{children}</label>
-      <button className='todo-delete'>
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <button onClick={onDelete} className='todo-delete'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
           <line x1="4" y1="7" x2="20" y2="7"></line>
           <line x1="10" y1="11" x2="10" y2="17"></line>
